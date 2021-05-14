@@ -24,6 +24,7 @@ from homeassistant.helpers.httpx_client import get_async_client
 
 from .act import DOWN, OFF, ON, UP, DenonACT
 from .const import (
+    CONF_FORCE_EXTERNAL_POWER,
     CONF_VOLUME_CONTROL,
     DOMAIN as HEOS_DOMAIN,
     VOLUME_CONTROL_EXTERNAL,
@@ -62,10 +63,18 @@ class ACTHeosMediaPlayer(HeosMediaPlayer):
     @log_command_error("turn on")
     async def async_turn_on(self):
         await self._denon_act.set_device_power_state(ON)
+        if self._force_external_power:
+            await self._denon_act.set_external_power_state(
+                ON, self._external_device_profile
+            )
 
     @log_command_error("turn off")
     async def async_turn_off(self):
         await self._denon_act.set_device_power_state(OFF)
+        if self._force_external_power:
+            await self._denon_act.set_external_power_state(
+                OFF, self._external_device_profile
+            )
 
     @log_command_error("volume up")
     async def async_volume_up(self):
@@ -90,6 +99,11 @@ class ACTHeosMediaPlayer(HeosMediaPlayer):
             CONF_VOLUME_CONTROL, VOLUME_CONTROL_INTERNAL
         )
         self._power_state = await self._denon_act.get_device_power_state()
+
+        self._external_device_profile = (
+            await self._denon_act.get_external_device_profile()
+        )
+        self._force_external_power = entry.options.get(CONF_FORCE_EXTERNAL_POWER, False)
 
     @property
     def should_poll(self) -> bool:

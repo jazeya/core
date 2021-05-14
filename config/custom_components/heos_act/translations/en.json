@@ -20,7 +20,8 @@
         "step": {
           "init": {
             "data": {
-              "volume_control": "Volume control"
+              "volume_control": "Volume control",
+              "force_external_power": "Force external power change"
             }
           }
         }

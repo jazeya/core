@@ -60,6 +60,16 @@ class DenonACT:
 
         return power_state
 
+    async def get_external_device_profile(self):
+        ACTION = "GetExternalDeviceProfile"
+
+        response = await self.build_and_post(ACT_URL, ACT_NS, ACTION, [])
+        profile_el = ET.fromstring(response.find(f".//profile").text)
+        device_control = profile_el.find(f".//deviceControl").text
+        device_type = profile_el.find(f".//deviceType").text
+
+        return device_type, device_control
+
     async def set_device_power_state(self, state):
         ACTION = "SetDevicePowerState"
 
@@ -67,6 +77,25 @@ class DenonACT:
         device_power.text = state
 
         await self.build_and_post(ACT_URL, ACT_NS, ACTION, [device_power])
+
+    async def set_external_power_state(self, state, external_device_profile):
+        ACTION = "SetExternalPowerState"
+
+        device_type, device_control = external_device_profile
+
+        device_power_el = ET.Element("powerState")
+        device_power_el.text = state
+        device_type_el = ET.Element("deviceType")
+        device_type_el.text = device_type
+        device_control_el = ET.Element("deviceControl")
+        device_control_el.text = device_control
+
+        await self.build_and_post(
+            ACT_URL,
+            ACT_NS,
+            ACTION,
+            [device_power_el, device_type_el, device_control_el],
+        )
 
     async def change_external_device_volume(self, direction):
         ACTION = "ChangeExternalDeviceVolume"

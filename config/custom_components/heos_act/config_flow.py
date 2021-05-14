@@ -6,6 +6,7 @@ from homeassistant.components.heos.config_flow import HeosFlowHandler, format_ti
 from homeassistant.core import callback
 
 from .const import (
+    CONF_FORCE_EXTERNAL_POWER,
     CONF_VOLUME_CONTROL,
     DOMAIN,
     VOLUME_CONTROL_EXTERNAL,
@@ -30,7 +31,13 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         default=self.config_entry.options.get(
                             CONF_VOLUME_CONTROL, VOLUME_CONTROL_EXTERNAL
                         ),
-                    ): vol.In([VOLUME_CONTROL_INTERNAL, VOLUME_CONTROL_EXTERNAL])
+                    ): vol.In([VOLUME_CONTROL_INTERNAL, VOLUME_CONTROL_EXTERNAL]),
+                    vol.Required(
+                        CONF_FORCE_EXTERNAL_POWER,
+                        default=self.config_entry.options.get(
+                            CONF_FORCE_EXTERNAL_POWER, False
+                        ),
+                    ): bool,
                 }
             ),
         )
