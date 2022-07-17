@@ -120,7 +120,7 @@ class ACTHeosMediaPlayer(HeosMediaPlayer):
     @property
     def supported_features(self) -> int:
         """Flag media player features that are supported."""
-        supported_features = self._supported_features
+        supported_features = self._attr_supported_features
         supported_features |= SUPPORT_TURN_ON | SUPPORT_TURN_OFF
         if self._volume_control == VOLUME_CONTROL_EXTERNAL:
             supported_features ^= SUPPORT_VOLUME_SET
